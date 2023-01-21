@@ -6,9 +6,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <netdb.h>
 
 #define MAXLINE 8192
 #define RIO_BUFSIZE 8192
+#define LISTENQ  1024  // Second argument to listen()
+
+// Simplifies calls to bind(), connect(), and accept()
+typedef struct sockaddr SA;
 
 // Persistent state for the robust I/O (rio) package
 typedef struct {
