@@ -10,7 +10,7 @@
 
 #define MAXLINE 8192
 #define RIO_BUFSIZE 8192
-#define LISTENQ  1024  // Second argument to listen()
+#define LISTENQ  1024  // Second argument to listen(). Maximum queue length of pending connections for sockfd.
 
 // Simplifies calls to bind(), connect(), and accept()
 typedef struct sockaddr SA;

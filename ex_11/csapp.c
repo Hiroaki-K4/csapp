@@ -33,11 +33,15 @@ static ssize_t rio_read(rio_t *rp, char *usrbuf, size_t n)
     while (rp->rio_cnt <= 0) {
         rp->rio_cnt = read(rp->rio_fd, rp->rio_buf, sizeof(rp->rio_buf));
         if (rp->rio_cnt < 0) {
-            if (errno != EINTR)
+            if (errno != EINTR) {
+                fprintf(stderr, "read error\n");
                 return -1;
+            }
         }
-        else if (rp->rio_cnt == 0)
+        else if (rp->rio_cnt == 0) {
+            printf("EOF\n");
             return 0;
+        }
         else
             rp->rio_bufptr = rp->rio_buf;
     }
@@ -66,15 +70,15 @@ ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen)
             }
         } else if (rc == 0) {
             if (n == 1)
-                return 0;
+                return 0; // EOF, no data read
             else
-                break;
+                break; // EOF, some data was read
         } else {
-            return -1;
+            return -1; // Error
         }
     }
     *bufp = 0;
-    return n -1;
+    return n - 1;
 }
 
 int open_clientfd(char *hostname, char *port)
@@ -106,6 +110,7 @@ int open_listenfd(char *port)
 {
     struct addrinfo hints, *listp, *p;
     int listenfd, optval = 1;
+    char buf[20];
 
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_socktype = SOCK_STREAM;
@@ -119,7 +124,11 @@ int open_listenfd(char *port)
         setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval, sizeof(int));
 
         if (bind(listenfd, p->ai_addr, p->ai_addrlen) == 0)
+        {
+            getnameinfo(p->ai_addr, p->ai_addrlen, buf, 20, NULL, 0, NI_NUMERICHOST);
+            printf("%s\n", buf);
             break;
+        }
         close(listenfd);
     }
 

@@ -2,14 +2,17 @@
 
 void echo(int connfd)
 {
-    size_t n;
+    ssize_t n;
     char buf[MAXLINE];
     rio_t rio;
 
     rio_readinitb(&rio, connfd);
     while ((n = rio_readlineb(&rio, buf, MAXLINE)) != 0) {
-        printf("server received %d bytes\n", (int)n);
-        rio_writen(connfd, buf, n);
+        if (n == -1) {
+            fprintf(stderr, "rio_readlineb error");
+        }
+        printf("Server received %d bytes\n", (int)n);
+        printf("Received message: %s\n", buf);
     }
 }
 
@@ -25,6 +28,11 @@ int main(int argc, char *argv[])
         return (1);
     }
     listenfd = open_listenfd(argv[1]);
+    printf("listenfd: %d\n", listenfd);
+    if (listenfd == -1) {
+        fprintf(stderr, "open_listenfd error\n");
+        return (1);
+    }
     while (1) {
         clientlen = sizeof(struct sockaddr_storage);
         connfd = accept(listenfd, (SA *)&clientaddr, &clientlen);
