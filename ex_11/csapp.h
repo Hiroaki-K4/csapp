@@ -7,6 +7,7 @@
 #include <string.h>
 #include <errno.h>
 #include <netdb.h>
+#include <sys/stat.h>
 
 #define MAXLINE 8192
 #define RIO_BUFSIZE 8192
