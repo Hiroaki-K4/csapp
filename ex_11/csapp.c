@@ -15,7 +15,7 @@ ssize_t rio_writen(int fd, void *usrbuf, size_t n)
 
     while (nleft > 0) {
         if ((nwriten = write(fd, bufp, nleft)) <= 0) {
-            if (errno == EINTR)
+            if (errno == EINTR) // interrupted by a signal while writing no data
                 nwriten = 0;
             else
                 return -1;
