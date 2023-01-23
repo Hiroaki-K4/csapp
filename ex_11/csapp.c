@@ -126,7 +126,7 @@ int open_listenfd(char *port)
         if (bind(listenfd, p->ai_addr, p->ai_addrlen) == 0)
         {
             getnameinfo(p->ai_addr, p->ai_addrlen, buf, 20, NULL, 0, NI_NUMERICHOST);
-            printf("%s\n", buf);
+            printf("Host address: %s\n", buf);
             break;
         }
         close(listenfd);

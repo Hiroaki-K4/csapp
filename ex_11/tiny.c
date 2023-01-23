@@ -1,13 +1,49 @@
 #include "csapp.h"
 
-// void 
+void read_requesthdrs(rio_t *rp)
+{
+    char buf[MAXLINE];
+
+    rio_readlineb(rp, buf, MAXLINE);
+    while (strcmp(buf, "\r\n")) {
+        rio_readlineb(rp, buf, MAXLINE);
+        printf("readline: %s\n", buf);
+    }
+    return;
+}
+
+int parse_uri(char *uri, char *filename, char *cgiargs)
+{
+    char *ptr;
+
+    if (!strstr(uri, "cgi-bin")) { // Static content
+        strcpy(cgiargs, "");
+        strcpy(filename, ".");
+        strcat(filename, uri);
+        if (uri[strlen(uri) - 1] == '/')
+            strcat(filename, "home.html");
+        return 1;
+    }
+    else {
+        ptr = index(uri, '?');
+        if (ptr) {
+            strcpy(cgiargs, ptr + 1);
+            *ptr = '\0';
+        } else {
+            strcpy(cgiargs, "");
+        }
+        strcpy(filename, ".");
+        strcat(filename, uri);
+        return 0;
+    }
+}
 
 void doit(int fd)
 {
-    // int is_static;
+    int is_static;
     // struct stat sbuf;
     char buf[MAXLINE], method[MAXLINE], uri[MAXLINE], version[MAXLINE];
-    // char filename[MAXLINE], cgiargs[MAXLINE];
+    char filename[MAXLINE], cgiargs[MAXLINE];
     rio_t rio;
 
     // Read request line and headers
@@ -16,14 +52,19 @@ void doit(int fd)
     printf("Request headers:\n");
     printf("%s", buf);
     sscanf(buf, "%s %s %s", method, uri, version);
-    // if (strcasecmp(method, "GET")) {
-    //     clienterror(fd, method, "501", "Not implemented", "Tiny does not implement this method");
-    //     return;
-    // }
-    // read_requesthdrs(&rio);
+    printf("method: %s uri: %s version: %s\n", method, uri, version);
+    int cmp_res = strcasecmp(method, "GET");
+    printf("cmp_res: %d\n", cmp_res);
+    if (cmp_res != 0) {
+        // clienterror(fd, method, "501", "Not implemented", "Tiny does not implement this method");
+        printf("Tiny does not implement this method\n");
+        return;
+    }
+    read_requesthdrs(&rio);
 
-    // // Parse URI from GET request
-    // is_static = parse_uri(uri, filename, cgiargs);
+    // Parse URI from GET request
+    is_static = parse_uri(uri, filename, cgiargs);
+    printf("is_static: %d\n", is_static);
     // if (stat(filename, &sbuf < 0) < 0) {
     //     clienterror(fd, filename, "404", "Not found", "Tiny cloudn't find this file");
     //     return;
@@ -57,6 +98,7 @@ int main(int argc, char *argv[])
         return 1;
     }
     listenfd = open_listenfd(argv[1]);
+    printf("Server listenfd: %d\n", listenfd);
     while (1) {
         clientlen = sizeof(clientaddr);
         connfd = accept(listenfd, (SA *)&clientaddr, &clientlen);
