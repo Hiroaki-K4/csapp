@@ -28,7 +28,7 @@ int parse_uri(char *uri, char *filename, char *cgiargs)
         ptr = index(uri, '?');
         if (ptr) {
             strcpy(cgiargs, ptr + 1);
-            *ptr = '\0';
+            *ptr = '\0';  // Change ? to null terminator
         } else {
             strcpy(cgiargs, "");
         }
@@ -38,10 +38,19 @@ int parse_uri(char *uri, char *filename, char *cgiargs)
     }
 }
 
+void serve_static(int fd, char *filename, int filesize)
+{
+    int srcfd;
+    char *srcp, filetype[MAXLINE], buf[MAXBUF];
+
+    get_filetype(filename, filetype);
+
+}
+
 void doit(int fd)
 {
     int is_static;
-    // struct stat sbuf;
+    struct stat sbuf;
     char buf[MAXLINE], method[MAXLINE], uri[MAXLINE], version[MAXLINE];
     char filename[MAXLINE], cgiargs[MAXLINE];
     rio_t rio;
@@ -54,28 +63,27 @@ void doit(int fd)
     sscanf(buf, "%s %s %s", method, uri, version);
     printf("method: %s uri: %s version: %s\n", method, uri, version);
     int cmp_res = strcasecmp(method, "GET");
-    printf("cmp_res: %d\n", cmp_res);
     if (cmp_res != 0) {
         // clienterror(fd, method, "501", "Not implemented", "Tiny does not implement this method");
         printf("Tiny does not implement this method\n");
         return;
     }
-    read_requesthdrs(&rio);
+    // read_requesthdrs(&rio);
 
     // Parse URI from GET request
     is_static = parse_uri(uri, filename, cgiargs);
-    printf("is_static: %d\n", is_static);
-    // if (stat(filename, &sbuf < 0) < 0) {
-    //     clienterror(fd, filename, "404", "Not found", "Tiny cloudn't find this file");
-    //     return;
-    // }
-    // if (is_static) { // Serve static content
-    //     if (!(S_ISREG(sbuf.st_mode) || !(S_IRUSR & sbuf.st_mode))) {
-    //         clienterror(fd, filename, "403", "Forbidden", "Tiny couldn't read the file");
-    //         return;
-    //     }
-    //     serve_static(fd, filename, sbuf,st_size);
-    // }
+    printf("is_static: %d filename: %s cgiargs: %s\n", is_static, filename, cgiargs);
+    if (stat(filename, &sbuf) < 0) {
+        printf("404 Not found: Tiny cloudn't find this file\n");
+        return;
+    }
+    if (is_static) { // Serve static content
+        if (!(S_ISREG(sbuf.st_mode) || !(S_IRUSR & sbuf.st_mode))) { // S_ISREG -> normal file?, S_IRUSR -> have read permission?
+            printf("403 Forbidden: Tiny couldn't read the file\n");
+            return;
+        }
+        serve_static(fd, filename, sbuf.st_size);
+    }
     // else { // Serve dynamic content
     //     if (!(S_ISREG(sbuf.st_mode)) || !(S_IXUSR & sbuf.st_mode)) {
     //         clienterror(fd, filename, "403", "Forbidden", "Tiny couldn't run the CGI program");

@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 
 #define MAXLINE 8192
+#define MAXBUF 8192
 #define RIO_BUFSIZE 8192
 #define LISTENQ  1024  // Second argument to listen(). Maximum queue length of pending connections for sockfd.
 
