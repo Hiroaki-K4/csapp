@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <netdb.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <stdbool.h>
 
 #define MAXLINE 8192
 #define MAXBUF 8192
@@ -27,7 +29,7 @@ typedef struct {
 
 void rio_readinitb(rio_t *rp, int fd);
 ssize_t rio_writen(int fd, void *usrbuf, size_t n);
-ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen);
+ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen, bool ignore_new_line);
 int open_clientfd(char *hostname, char *port);
 int open_listenfd(char *port);
 

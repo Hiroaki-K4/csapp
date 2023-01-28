@@ -17,7 +17,7 @@ CFLAGS := -Wall -Wextra -Werror
 INCLUDE := -I.
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
+	$(CC) $(INCLUDE) -c $< -o $@
 
 $(client): $(CLIENT_OBJS)
 	$(CC) $(CLIENT_OBJS) -o $(CLIENT)

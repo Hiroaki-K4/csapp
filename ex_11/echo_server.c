@@ -7,7 +7,7 @@ void echo(int connfd)
     rio_t rio;
 
     rio_readinitb(&rio, connfd);
-    while ((n = rio_readlineb(&rio, buf, MAXLINE)) != 0) {
+    while ((n = rio_readlineb(&rio, buf, MAXLINE, true)) != 0) {
         if (n == -1) {
             fprintf(stderr, "rio_readlineb error");
         }

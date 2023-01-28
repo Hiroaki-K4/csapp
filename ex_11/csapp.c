@@ -55,7 +55,7 @@ static ssize_t rio_read(rio_t *rp, char *usrbuf, size_t n)
     return cnt;
 }
 
-ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen)
+ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen, bool ignore_new_line)
 {
     int rc;
     size_t n;
@@ -64,7 +64,7 @@ ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen)
     for (n = 1; n < maxlen; n++) {
         if ((rc = rio_read(rp, &c, 1)) == 1) {
             *bufp++ = c;
-            if (c == '\n') {
+            if (ignore_new_line && c == '\n') {
                 n++;
                 break;
             }

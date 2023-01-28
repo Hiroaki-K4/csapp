@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
             fprintf(stderr, "rio_writen error\n");
             return (-1);
         }
-        rio_readlineb(&rio, buf, MAXLINE);
+        rio_readlineb(&rio, buf, MAXLINE, false);
         fputs(buf, stdout);
     }
     close(clientfd);

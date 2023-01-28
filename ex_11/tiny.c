@@ -4,10 +4,9 @@ void read_requesthdrs(rio_t *rp)
 {
     char buf[MAXLINE];
 
-    rio_readlineb(rp, buf, MAXLINE);
+    rio_readlineb(rp, buf, MAXLINE, true);
     while (strcmp(buf, "\r\n")) {
-        rio_readlineb(rp, buf, MAXLINE);
-        printf("readline: %s\n", buf);
+        rio_readlineb(rp, buf, MAXLINE, true);
     }
     return;
 }
@@ -38,13 +37,45 @@ int parse_uri(char *uri, char *filename, char *cgiargs)
     }
 }
 
+void get_filetype(char *filename, char *filetype)
+{
+    if (strstr(filename, ".html"))
+        strcpy(filetype, "text/html");
+    else if (strstr(filename, ".gif"))
+        strcpy(filetype, "image/gif");
+    else if (strstr(filename, ".png"))
+        strcpy(filetype, "image/png");
+    else if (strstr(filename, ".jpg"))
+        strcpy(filetype, "image/jpeg");
+    else
+        strcpy(filetype, "text/plain");
+}
+
 void serve_static(int fd, char *filename, int filesize)
 {
     int srcfd;
     char *srcp, filetype[MAXLINE], buf[MAXBUF];
 
+    // Send response headers to client
     get_filetype(filename, filetype);
+    sprintf(buf, "HTTP/1.0, 200 OK\r\n");
+    sprintf(buf, "%sServer: Tiny Web Server\r\n", buf);
+    sprintf(buf, "%sConnection: close\r\n", buf);
+    sprintf(buf, "%sContent-length: %d\r\n", buf, filesize);
+    sprintf(buf, "%sContent-type: %s\r\n", buf, filetype);
+    if (rio_writen(fd, buf, strlen(buf)) == -1) {
+        printf("rio_writen error!");
+        return;
+    }
+    printf("Response headers:\n");
+    printf("%s", buf);
 
+    // Send response body to client
+    srcfd = open(filename, O_RDONLY, 0);
+    srcp = mmap();
+    close(srcfd);
+    rio_writen(fd, srcp, filesize);
+    munmap(srcp, filesize);
 }
 
 void doit(int fd)
@@ -57,7 +88,7 @@ void doit(int fd)
 
     // Read request line and headers
     rio_readinitb(&rio, fd);
-    rio_readlineb(&rio, buf, MAXLINE);
+    rio_readlineb(&rio, buf, MAXLINE, true);
     printf("Request headers:\n");
     printf("%s", buf);
     sscanf(buf, "%s %s %s", method, uri, version);
