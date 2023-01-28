@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdbool.h>
+#include <sys/mman.h>
+#include <stdlib.h>
 
 #define MAXLINE 8192
 #define MAXBUF 8192
@@ -26,6 +28,8 @@ typedef struct {
     char *rio_bufptr;           // Next unread byte in internal buf
     char rio_buf[RIO_BUFSIZE];  // Internal buffer
 } rio_t;
+
+extern char **environ;
 
 void rio_readinitb(rio_t *rp, int fd);
 ssize_t rio_writen(int fd, void *usrbuf, size_t n);

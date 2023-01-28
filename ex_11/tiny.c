@@ -72,10 +72,28 @@ void serve_static(int fd, char *filename, int filesize)
 
     // Send response body to client
     srcfd = open(filename, O_RDONLY, 0);
-    srcp = mmap();
+    srcp = mmap(0, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0);
     close(srcfd);
     rio_writen(fd, srcp, filesize);
     munmap(srcp, filesize);
+}
+
+void serve_dynamic(int fd, char *filename, char *cgiargs)
+{
+    char buf[MAXLINE], *emptylist[] = { NULL };
+
+    // Return first part of HTTP response
+    sprintf(buf, "HTTP/1.0 200 OK\r\n");
+    rio_writen(fd, buf, strlen(buf));
+    sprintf(buf, "Server: Tiny Web Server\r\n");
+    rio_writen(fd, buf, strlen(buf));
+
+    if (fork()== 0) {
+        setenv("QUERY_STRING", cgiargs, 1);
+        dup2(fd, STDOUT_FILENO);
+        execve(filename, emptylist, environ);
+    }
+    wait(NULL);
 }
 
 void doit(int fd)
@@ -115,13 +133,13 @@ void doit(int fd)
         }
         serve_static(fd, filename, sbuf.st_size);
     }
-    // else { // Serve dynamic content
-    //     if (!(S_ISREG(sbuf.st_mode)) || !(S_IXUSR & sbuf.st_mode)) {
-    //         clienterror(fd, filename, "403", "Forbidden", "Tiny couldn't run the CGI program");
-    //         return;
-    //     }
-    //     serve_dynamic(fd, filename, cgiargs);
-    // }
+    else { // Serve dynamic content
+        if (!(S_ISREG(sbuf.st_mode)) || !(S_IXUSR & sbuf.st_mode)) {
+            printf("403 Forbidden: Tiny couldn't run the CGI program\n");
+            return;
+        }
+        serve_dynamic(fd, filename, cgiargs);
+    }
 }
 
 int main(int argc, char *argv[])
