@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <sys/select.h>
 
 #define MAXLINE 8192
 #define MAXBUF 8192
