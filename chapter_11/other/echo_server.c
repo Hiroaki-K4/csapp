@@ -1,21 +1,5 @@
 #include "csapp.h"
 
-void echo(int connfd)
-{
-    ssize_t n;
-    char buf[MAXLINE];
-    rio_t rio;
-
-    rio_readinitb(&rio, connfd);
-    while ((n = rio_readlineb(&rio, buf, MAXLINE, true)) != 0) {
-        if (n == -1) {
-            fprintf(stderr, "rio_readlineb error");
-        }
-        printf("Server received %d bytes\n", (int)n);
-        printf("Received message: %s\n", buf);
-    }
-}
-
 int main(int argc, char *argv[])
 {
     int listenfd, connfd;

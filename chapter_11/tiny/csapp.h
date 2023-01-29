@@ -12,6 +12,8 @@
 #include <stdbool.h>
 #include <sys/mman.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <sys/wait.h>
 
 #define MAXLINE 8192
 #define MAXBUF 8192
@@ -36,5 +38,6 @@ ssize_t rio_writen(int fd, void *usrbuf, size_t n);
 ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen, bool ignore_new_line);
 int open_clientfd(char *hostname, char *port);
 int open_listenfd(char *port);
+void echo(int connfd);
 
 #endif
