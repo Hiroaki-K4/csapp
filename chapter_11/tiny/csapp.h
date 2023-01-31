@@ -16,6 +16,7 @@
 #include <sys/wait.h>
 #include <sys/select.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 #define MAXLINE 8192
 #define MAXBUF 8192
