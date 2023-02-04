@@ -13,6 +13,16 @@ void *thread(void *vargp)
     }
 }
 
+// void echo_cnt(int connfd)
+// {
+//     int n;
+//     char buf[MAXLINE];
+//     rio_t rio;
+//     static pthread_once_t once = PTHREAD_ONCE_INIT;
+
+//     pthread_once()
+// }
+
 int main(int argc, char *argv[])
 {
     int i, listenfd, connfd;
@@ -26,13 +36,13 @@ int main(int argc, char *argv[])
     }
     listenfd = open_listenfd(argv[1]);
 
-    sbuf_init(&sbuf, SBUFSIZE);
-    for (i = 0; i < NTHREADS; i++)
-        pthread_create(&tid, NULL, thread, NULL);
+    // sbuf_init(&sbuf, SBUFSIZE);
+    // for (i = 0; i < NTHREADS; i++)
+    //     pthread_create(&tid, NULL, thread, NULL);
 
-    while (1) {
-        clientlen = sizeof(struct sockaddr_storage);
-        connfd = accept(listenfd, (SA *)&clientaddr, &clientlen);
-        sbuf_insert(&sbuf, connfd);
-    }
+    // while (1) {
+    //     clientlen = sizeof(struct sockaddr_storage);
+    //     connfd = accept(listenfd, (SA *)&clientaddr, &clientlen);
+    //     sbuf_insert(&sbuf, connfd);
+    // }
 }
