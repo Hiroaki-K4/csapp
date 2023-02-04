@@ -3,12 +3,14 @@
 #define NTHREADS 4
 #define SBUFSIZE 16
 
+sbuf_t sbuf; // Shared buffer of connected descriptors
+
 void *thread(void *vargp)
 {
     pthread_detach(pthread_self()); // Detach self thread from parent thread
     while (1) {
         int connfd = sbuf_remove(&sbuf); // Remove connfd from buffer
-        echo_cnt(connfd);
+        // echo_cnt(connfd);
         close(connfd);
     }
 }

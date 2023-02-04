@@ -33,8 +33,3 @@ gcc -I../chapter_11/tiny echo_servers.c ../chapter_11/tiny/csapp.c -o echo_serve
 gcc -I../chapter_11/tiny echo_client.c ../chapter_11/tiny/csapp.c -o echo_client
 ./echo_client ::1 8080
 ```
-
-## How to run thread/echo_servert_pre.c
-```
-gcc -I../chapter_11/tiny -I./thread thread/echo_servert_pre.c ../chapter_11/tiny/csapp.c -o echo_servert_pre
-```
