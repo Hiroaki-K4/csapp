@@ -15,4 +15,10 @@ gcc -pthread -I../../chapter_11/tiny cnt.c -o cnt
 ## How to run thread/echo_servert_pre.c
 ```
 gcc -pthread -I../../chapter_11/tiny -I. echo_servert_pre.c sbuf.c  ../../chapter_11/tiny/csapp.c -o echo_servert_pre
+./echo_servert_pre 8080
+```
+
+## How to run echo_client.c
+```
+gcc -pthread -I../../chapter_11/tiny echo_client.c ../../chapter_11/tiny/csapp.c -o echo_client
 ```
