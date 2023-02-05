@@ -22,3 +22,9 @@ gcc -pthread -I../../chapter_11/tiny -I. echo_servert_pre.c sbuf.c  ../../chapte
 ```
 gcc -pthread -I../../chapter_11/tiny echo_client.c ../../chapter_11/tiny/csapp.c -o echo_client
 ```
+
+## How to run psum_mutex.c
+```
+gcc -pthread -I../../chapter_11/tiny psum_mutex.c ../../chapter_11/tiny/csapp.c -o psum_mutex
+./psum_mutex 1 31
+```
