@@ -62,7 +62,7 @@ void serve_static(int fd, char *filename, int filesize)
     sprintf(buf, "%sServer: Tiny Web Server\r\n", buf);
     sprintf(buf, "%sConnection: close\r\n", buf);
     sprintf(buf, "%sContent-length: %d\r\n", buf, filesize);
-    sprintf(buf, "%sContent-type: %s\r\n", buf, filetype);
+    sprintf(buf, "%sContent-type: %s\r\n\r\n", buf, filetype);
     if (rio_writen(fd, buf, strlen(buf)) == -1) {
         printf("rio_writen error!");
         return;
